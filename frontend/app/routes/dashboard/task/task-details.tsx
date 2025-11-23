@@ -164,7 +164,7 @@ const TaskDetails = () => {
 
                 <TaskTitle title={task.title} taskId={task._id} />
 
-                <div className="text-sm md:text-base text-muted-foreground">
+                <div className="text-sm font-medium text-muted-foreground mb-0">
                   Created at:{" "}
                   {formatDistanceToNow(new Date(task.createdAt), {
                     addSuffix: true,
@@ -172,7 +172,7 @@ const TaskDetails = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 mt-4 md:mt-0">
+              <div className="flex items-center gap-2 mt-4 md:mt-0 pl-1.5">
                 <TaskStatusSelector status={task.status} taskId={task._id} />
 
                 <Button
