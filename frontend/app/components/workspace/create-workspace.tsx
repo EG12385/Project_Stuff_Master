@@ -32,14 +32,15 @@ interface CreateWorkspaceProps {
 
 // Define 8 predefined colors
 export const colorOptions = [
-  "#FF5733", // Red-Orange
-  "#33C1FF", // Blue
-  "#28A745", // Green
-  "#FFC300", // Yellow
-  "#8E44AD", // Purple
-  "#E67E22", // Orange
-  "#2ECC71", // Light Green
-  "#34495E", // Navy
+  "#A94A4A", // Red-Orange
+  "#23486A", // Blue
+  "#2F5755", // Green
+  "#732255", // Purple
+  "#DDA853", // Yellow
+  "#474E93", // Purple Light
+  "#DA7297", // Pink
+  "#568F87", // Light Green
+  "#3AA6B9", // Light Blue
 ];
 
 export type WorkspaceForm = z.infer<typeof workspaceSchema>;

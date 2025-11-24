@@ -32,11 +32,11 @@ const Workspaces = () => {
     <>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl md:text-3xl font-bold">Workspaces</h2>
+          <h2 className="text-xl md:text-3xl font-bold">Projects by Team</h2>
 
           <Button onClick={() => setIsCreatingWorkspace(true)}>
-            <PlusCircle className="size-4 mr-2" />
-            New Workspace
+            <PlusCircle className="size-6 mr-2" />
+            Add Project
           </Button>
         </div>
 
@@ -69,25 +69,25 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
     <Link to={`/workspaces/${workspace._id}`}>
       <Card className="transition-all hover:shadow-md hover:-translate-y-1">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-2xl">
             <div className="flex gap-2">
               <WorkspaceAvatar name={workspace.name} color={workspace.color} />
 
               <div>
                 <CardTitle>{workspace.name}</CardTitle>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground font-bold">
                   Created at {format(workspace.createdAt, "MMM d, yyyy h:mm a")}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center text-muted-foreground">
-              <Users className="size-4 mr-1" />
+              <Users className="size-6 mr-1" />
               <span className="text-xs">{workspace.members.length}</span>
             </div>
           </div>
 
-          <CardDescription>
+          <CardDescription className="text-s ">
             {workspace.description || "No description"}
           </CardDescription>
         </CardHeader>

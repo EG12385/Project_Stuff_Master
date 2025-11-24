@@ -69,7 +69,10 @@ className="min-h-screen flex flex-col items-center justify-center bg-muted/40 ml
  
   <Card className="max-w-md w-md shadow-2xs">
     <CardHeader  className="text-center mb-5">
-      <CardTitle className='text-2xl font-bold'>Welcome Back</CardTitle>
+      <CardTitle className='text-2xl font-bold'>ICTGlobe Projects</CardTitle>
+      <CardTitle className="text-s font-bold">
+      Welcome Back
+      </CardTitle>
       <CardTitle className="text-sm">
       Sign into your account to continue
       </CardTitle>

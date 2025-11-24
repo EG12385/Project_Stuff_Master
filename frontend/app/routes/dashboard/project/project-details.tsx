@@ -256,9 +256,9 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
           <Badge
             className={
               task.priority === "High"
-                ? "bg-red-500 text-white"
+                ? "bg-red-800 text-white"
                 : task.priority === "Medium"
-                ? "bg-orange-500 text-white"
+                ? "bg-yellow-700 text-white"
                 : "bg-slate-500 text-white"
             }
           >
