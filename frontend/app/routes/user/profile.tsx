@@ -24,8 +24,7 @@ import {
   useChangePassword,
   useUpdateUserProfile,
   useUserProfileQuery,
-
-} from "@/hooks/use-user"
+} from "@/hooks/use-user";
 import { useAuth } from "@/provider/auth-context";
 import type { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -34,7 +34,7 @@ import {
 } from "recharts";
 
 interface StatisticsChartsProps {
-  stats: StatsCardProps;
+  stats: StatsCardProps
   taskTrendsData: TaskTrendsData[];
   projectStatusData: ProjectStatusData[];
   taskPriorityData: TaskPriorityData[];

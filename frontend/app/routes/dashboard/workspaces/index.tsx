@@ -31,8 +31,8 @@ const Workspaces = () => {
   return (
     <>
       <div className="space-y-8">
-        <div className="flex items-center justify-between ">
-          <h2 className="text-xl md:text-3xl font-bold " >Client Stuff</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl md:text-3xl font-bold">Workspaces</h2>
 
           <Button onClick={() => setIsCreatingWorkspace(true)}>
             <PlusCircle className="size-4 mr-2" />
@@ -82,7 +82,7 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
             </div>
 
             <div className="flex items-center text-muted-foreground">
-              <Users className="size-5 mr-1" />
+              <Users className="size-4 mr-1" />
               <span className="text-xs">{workspace.members.length}</span>
             </div>
           </div>

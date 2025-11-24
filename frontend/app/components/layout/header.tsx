@@ -15,7 +15,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Link, useLoaderData, useLocation, useNavigate } from "react-router";
 import { WorkspaceAvatar } from "../workspace/workspace-avatar";
 
-
 interface HeaderProps {
   onWorkspaceSelected: (workspace: Workspace) => void;
   selectedWorkspace: Workspace | null;
@@ -88,7 +87,7 @@ export const Header = ({
 
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={onCreateWorkspace}>
-                <PlusCircle className="w-10 h-10 mr-2" />
+                <PlusCircle className="w-4 h-4 mr-2" />
                 Create Workspace
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -102,8 +101,8 @@ export const Header = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button  className="w-10 h-10">
-                <Avatar className=" w-10 h-10">
+              <button className="rounded-full border p-1 w-8 h-8">
+                <Avatar className="w-8 h-8">
                   <AvatarImage src={user?.profilePicture} alt={user?.name} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {user?.name?.charAt(0).toUpperCase()}

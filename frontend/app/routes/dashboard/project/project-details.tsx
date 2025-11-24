@@ -56,20 +56,20 @@ const ProjectDetails = () => {
         <div>
           <BackButton />
           <div className="flex items-center gap-3">
-            <h1 className="text-xl md:text-2xl font-bold mb-2 mt-2">{project.title}</h1>
+            <h1 className="text-xl md:text-2xl font-bold">{project.title}</h1>
           </div>
           {project.description && (
-            <p className="text-s text-gray-800">{project.description}</p>
+            <p className="text-sm text-gray-500">{project.description}</p>
           )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex items-center gap-2 min-w-55">
-            <div className="text-s text-muted-foreground font-black">Progress:</div>
+          <div className="flex items-center gap-2 min-w-32">
+            <div className="text-sm text-muted-foreground">Progress:</div>
             <div className="flex-1">
-              <Progress value={projectProgress} className="h-4" />
+              <Progress value={projectProgress} className="h-2" />
             </div>
-            <span className="text-sm text-muted-foreground font-black">
+            <span className="text-sm text-muted-foreground">
               {projectProgress}%
             </span>
           </div>
@@ -97,7 +97,6 @@ const ProjectDetails = () => {
               <TabsTrigger value="done" onClick={() => setTaskFilter("Done")}>
                 Done
               </TabsTrigger>
-
             </TabsList>
 
             <div className="flex items-center text-sm">
@@ -113,7 +112,6 @@ const ProjectDetails = () => {
                 <Badge variant="outline" className="bg-background">
                   {tasks.filter((task) => task.status === "Done").length} Done
                 </Badge>
-               
               </div>
             </div>
           </div>
@@ -229,8 +227,8 @@ const TaskColumn = ({
           )}
         >
           {tasks.length === 0 ? (
-            <div className="text-center text-s text-muted-foreground">
-              No Tasks
+            <div className="text-center text-sm text-muted-foreground">
+              No tasks yet
             </div>
           ) : (
             tasks.map((task) => (
@@ -254,14 +252,14 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
       className="cursor-pointer hover:shadow-md transition-all duration-300 hover:translate-y-1"
     >
       <CardHeader>
-        <div className="flex items-center justify-between ">
+        <div className="flex items-center justify-between">
           <Badge
             className={
               task.priority === "High"
-                ? "bg-red-700 text-white font-bold"
+                ? "bg-red-500 text-white"
                 : task.priority === "Medium"
-                ? "bg-orange-400 text-white font-bold"
-                : "bg-blue-500 text-white font-bold"
+                ? "bg-orange-500 text-white"
+                : "bg-slate-500 text-white"
             }
           >
             {task.priority}

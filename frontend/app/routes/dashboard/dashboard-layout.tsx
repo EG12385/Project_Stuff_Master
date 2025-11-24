@@ -1,4 +1,3 @@
-
 import { Header } from "@/components/layout/header";
 import { SidebarComponent } from "@/components/layout/sidebar-component";
 import { Loader } from "@/components/loader";
