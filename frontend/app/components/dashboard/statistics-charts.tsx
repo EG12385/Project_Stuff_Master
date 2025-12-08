@@ -63,9 +63,9 @@ export const StatisticsCharts = ({
             <ChartContainer
               className="h-[300px]"
               config={{
-                completed: { color: "#10b981" }, // green
-                inProgress: { color: "#f59e0b" }, // blue
-                todo: { color: "#3b82f6" }, // gray
+                completed: { color: "#427A76" }, // green
+                inProgress: { color: "#80A1BA" }, // blue
+                todo: { color: "#850E35" }, // blue
               }}
             >
               <LineChart data={taskTrendsData}>
@@ -89,21 +89,21 @@ export const StatisticsCharts = ({
                 <Line
                   type="monotone"
                   dataKey={"completed"}
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
+                  stroke="#427A76"
+                  strokeWidth={4}
+                  dot={{ r: 5 }}
                 />
                 <Line
                   type="monotone"
-                  dataKey="inProgress"
-                  stroke="#3b82f6"
+                  dataKey="InProgress"
+                  stroke="#80A1BA"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="todo"
-                  stroke="#6b7280"
+                  stroke="#850E35"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                 />
@@ -135,18 +135,18 @@ export const StatisticsCharts = ({
               className="h-[300px]"
               config={{
                 Completed: { color: "#10b981" },
-                "In Progress": { color: "#3b82f6" },
-                Planning: { color: "#f59e0b" },
+                "In Progress": { color: "#80A1BA" },
+                Planning: { color: "#80A1BA" },
               }}
             >
               <PieChart>
                 <Pie
                   data={projectStatusData}
-                  cx="50%"
-                  cy="50%"
+                  cx="40%"
+                  cy="40%"
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={60}
+                  innerRadius={50}
                   outerRadius={80}
                   paddingAngle={2}
                   label={({ name, percent }) =>
@@ -178,21 +178,21 @@ export const StatisticsCharts = ({
         </CardHeader>
 
         <CardContent className="w-full overflow-x-auto md:overflow-x-hidden">
-          <div className="min-w-[350px]">
+          <div className="min-w-[800px]">
             <ChartContainer
               className="h-[300px]"
               config={{
-                High: { color: "#ef4444" },
-                Medium: { color: "#f59e0b" },
-                Low: { color: "#6b7280" },
+                High: { color: "#778873" },
+                Medium: { color: "#80A1BA" },
+                Low: { color: "#80A1BA" },
               }}
             >
               <PieChart>
                 <Pie
                   data={taskPriorityData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
+                  cx="40%"
+                  cy="40%"
+                  innerRadius={50}
                   outerRadius={80}
                   paddingAngle={2}
                   dataKey="value"
@@ -262,7 +262,7 @@ export const StatisticsCharts = ({
                 />
                 <Bar
                   dataKey="completed"
-                  fill="#3b82f6"
+                  fill="#427A76"
                   radius={[4, 4, 0, 0]}
                   name="Completed Tasks"
                 />

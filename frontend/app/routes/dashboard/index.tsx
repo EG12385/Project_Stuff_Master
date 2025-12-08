@@ -3,6 +3,7 @@ import { StatsCard } from "@/components/dashboard/stat-card";
 import { StatisticsCharts } from "@/components/dashboard/statistics-charts";
 import { Loader } from "@/components/loader";
 import { UpcomingTasks } from "@/components/upcoming-tasks";
+import { useWorkspaceContext } from "@/context/WorkspaceContext";
 import { useGetWorkspaceStatsQuery } from "@/hooks/use-workspace";
 import type {
   Project,
@@ -32,6 +33,7 @@ const Dashboard = () => {
     isPending: boolean;
   };
 
+
   if (isPending) {
     return (
       <div>
@@ -39,6 +41,13 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  const {selectedWorkspace} = useWorkspaceContext ();
+  
+  if (!selectedWorkspace) {
+    return <div>Loading Workspace...</div>
+  }
+  
 
   return (
     <div className="space-y-8 2xl:space-y-12">

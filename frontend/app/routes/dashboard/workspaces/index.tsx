@@ -13,9 +13,11 @@ import { WorkspaceAvatar } from "@/components/workspace/workspace-avatar";
 import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
 import type { Workspace } from "@/types";
 import { PlusCircle, Users } from "lucide-react";
-import { useState } from "react";
-import { Link, useLoaderData } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import { format } from "date-fns";
+import { useWorkspaceContext } from "@/context/WorkspaceContext";
+
 
 const Workspaces = () => {
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
@@ -24,9 +26,16 @@ const Workspaces = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
+   const { selectedWorkspace, setSelectedWorkspace } = useWorkspaceContext();
+  const navigate = useNavigate();
+
+  useEffect (() => {
+    if (!isLoading && workspaces?.length > 0 && !selectedWorkspace) {
+      const first =workspaces [0];
+      setSelectedWorkspace(first);
+      navigate(`/workspaces/${first._id}`);
+    }
+  }, [isLoading, workspaces, selectedWorkspace]);
 
   return (
     <>
@@ -41,18 +50,16 @@ const Workspaces = () => {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {workspaces.map((ws) => (
-            <WorkspaceCard key={ws._id} workspace={ws} />
-          ))}
-
-          {workspaces.length === 0 && (
-            <NoDataFound
-              title="No workspaces found"
-              description="Create a new workspace to get started"
-              buttonText="Create Workspace"
-              buttonAction={() => setIsCreatingWorkspace(true)}
-            />
-          )}
+         {workspaces?.length ? (
+  workspaces.map((ws) => <WorkspaceCard key={ws._id} workspace={ws} />)
+) : (
+  <NoDataFound
+    title="No workspaces found"
+    description="Create a new workspace to get started"
+    buttonText="Create Workspace"
+    buttonAction={() => setIsCreatingWorkspace(true)}
+  />
+)}
         </div>
       </div>
 

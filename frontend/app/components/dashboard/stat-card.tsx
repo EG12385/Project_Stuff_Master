@@ -17,7 +17,7 @@ export const StatsCard = ({ data }: { data: StatsCardProps }) => {
         <CardContent>
           <div className="text-2xl font-bold">{data.totalProjects}</div>
           <p className="text-xs text-muted-foreground">
-            {data.totalProjectInProgress} in progress
+            {data.totalProjectInProgress} In progress
           </p>
         </CardContent>
       </Card>
@@ -28,7 +28,7 @@ export const StatsCard = ({ data }: { data: StatsCardProps }) => {
         <CardContent>
           <div className="text-2xl font-bold">{data.totalTasks}</div>
           <p className="text-xs text-muted-foreground">
-            {data.totalTaskCompleted} completed
+            {data.totalTaskCompleted} Completed
           </p>
         </CardContent>
       </Card>
@@ -50,7 +50,7 @@ export const StatsCard = ({ data }: { data: StatsCardProps }) => {
         <CardContent>
           <div className="text-2xl font-bold">{data.totalTaskInProgress}</div>
           <p className="text-xs text-muted-foreground">
-            Tasks currently in progress
+            Tasks in progress
           </p>
         </CardContent>
       </Card>

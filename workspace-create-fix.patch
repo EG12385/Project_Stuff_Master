@@ -1,0 +1,152 @@
+*** Begin Patch
+*** Add File: frontend/app/context/WorkspaceContext.tsx
++import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
++import type { Workspace } from "@/types";
++import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
++
++interface WorkspaceContextType {
++  selectedWorkspace: Workspace | null;
++  setSelectedWorkspace: (workspace: Workspace | null) => void;
++  workspaces: Workspace[];
++  setWorkspaces: (ws: Workspace[]) => void;
++}
++
++const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
++
++export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
++  const { data: workspaceData, isLoading } = useGetWorkspacesQuery() as {
++    data: Workspace[] | undefined;
++    isLoading: boolean;
++  };
++
++  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
++  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
++
++  // sync fetched data into local state
++  useEffect(() => {
++    if (!isLoading && workspaceData) {
++      setWorkspaces(workspaceData);
++
++      // if nothing is selected, pick the first one by default
++      if (!selectedWorkspace && workspaceData.length > 0) {
++        setSelectedWorkspace(workspaceData[0]);
++      }
++    }
++  }, [workspaceData, isLoading, selectedWorkspace]);
++
++  const value: WorkspaceContextType = {
++    selectedWorkspace,
++    setSelectedWorkspace,
++    workspaces,
++    setWorkspaces,
++  };
++
++  return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
++};
++
++export const useWorkspaceContext = () => {
++  const ctx = useContext(WorkspaceContext);
++  if (!ctx) {
++    throw new Error("useWorkspaceContext must be used within WorkspaceProvider");
++  }
++  return ctx;
++};
++
+*** End Patch
+*** Begin Patch
+*** Update File: ProjectStuff/frontend/app/components/workspace/create-workspace.tsx
+@@
+ import { useNavigate } from "react-router";
++import { useWorkspaceContext } from "@/context/WorkspaceContext";
+@@
+   const navigate = useNavigate();
+   const { mutate, isPending } = useCreateWorkspace();
++  const { workspaces, setWorkspaces, setSelectedWorkspace } = useWorkspaceContext();
+ 
+   const onSubmit = (data: WorkspaceForm) => {
+     mutate(data, {
+       onSuccess: (data: any) => {
+         form.reset();
+         setIsCreatingWorkspace(false);
+         toast.success("Workspace created successfully");
+-        navigate(`/workspaces/${data._id}`);
++        // update the global workspace list and select the new workspace
++        try {
++          setWorkspaces([...(workspaces || []), data]);
++          setSelectedWorkspace(data);
++        } catch (e) {
++          // fail quietly if context isn't ready for some reason
++          console.warn("Could not update workspace context:", e);
++        }
++        navigate(`/workspaces/${data._id}`);
+       },
+       onError: (error: any) => {
+         const errorMessage = error.response.data.message;
+         toast.error(errorMessage);
+         console.log(error);
+       },
+     });
+   };
+*** End Patch
+*** Begin Patch
+*** Update File: frontend/app/components/layout/header.tsx
+@@
+-import { useLocation, useNavigate } from "react-router";
+-import { useWorkspaceContext } from "@/context/WorkspaceContext";
++import { useLocation, useNavigate } from "react-router";
++import { useWorkspaceContext } from "@/context/WorkspaceContext";
+@@
+-  const { user, logout } = useAuth();
+-  const { selectedWorkspace, setSelectedWorkspace, workspaces } = useWorkspaceContext();
++  const { user, logout } = useAuth();
++  const { selectedWorkspace, setSelectedWorkspace, workspaces } = useWorkspaceContext();
+*** End Patch
+*** Begin Patch
+*** Update File: frontend/app/routes/dashboard/index.tsx
+@@
+-import { useWorkspaceContext } from "@/context/WorkspaceContext";
+-import { Loader } from "@/components/loader";
++import { useWorkspaceContext } from "@/context/WorkspaceContext";
++import { Loader } from "@/components/loader";
+@@
+-const { selectedWorkspace } = useWorkspaceContext();
+-
+-if (!selectedWorkspace) return <Loader />;
+-
+-const stats = selectedWorkspace.stats;
++const { selectedWorkspace } = useWorkspaceContext();
++
++if (!selectedWorkspace) return <Loader />;
++
++const stats = selectedWorkspace.stats;
+*** End Patch
+*** Begin Patch
+*** Update File: frontend/app/routes/dashboard/workspaces/index.tsx
+@@
+-import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
++import { useWorkspaceContext } from "@/context/WorkspaceContext";
+@@
+-  const { data: workspaces, isLoading } = useGetWorkspacesQuery() as {
+-    data: Workspace[];
+-    isLoading: boolean;
+-  };
++  const { workspaces } = useWorkspaceContext();
+@@
+-          {workspaces.map((ws) => (
+-            <WorkspaceCard key={ws._id} workspace={ws} />
+-          ))}
+-
+-          {workspaces.length === 0 && (
++          {workspaces?.length ? (
++            workspaces.map((ws) => (
++              <WorkspaceCard key={ws._id} workspace={ws} />
++            ))
++          ) : (
++            <NoDataFound
++              title="No workspaces found"
++              description="Create a new workspace to get started"
++              buttonText="Create Workspace"
++              buttonAction={() => setIsCreatingWorkspace(true)}
++            />
++          )}
+*** End Patch

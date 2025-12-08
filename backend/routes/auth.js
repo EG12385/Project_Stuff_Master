@@ -31,7 +31,8 @@ router.post(
   validateRequest({
     body: loginSchema,
   }),
-  loginUser
+  loginUser,
+
 );
 
 router.post(

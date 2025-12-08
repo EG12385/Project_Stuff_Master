@@ -12,35 +12,30 @@ import {
   DropdownMenuGroup,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Link, useLoaderData, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { WorkspaceAvatar } from "../workspace/workspace-avatar";
+import { useWorkspaceContext } from "@/context/WorkspaceContext";
 
 interface HeaderProps {
-  onWorkspaceSelected: (workspace: Workspace) => void;
-  selectedWorkspace: Workspace | null;
   onCreateWorkspace: () => void;
 }
 
-export const Header = ({
-  onWorkspaceSelected,
-  selectedWorkspace,
-  onCreateWorkspace,
-}: HeaderProps) => {
+export const Header = ({ onCreateWorkspace }: HeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { user, logout } = useAuth();
-  const { workspaces } = useLoaderData() as { workspaces: Workspace[] };
-  const isOnWorkspacePage = useLocation().pathname.includes("/workspace");
+  const { selectedWorkspace, setSelectedWorkspace, workspaces } = useWorkspaceContext();
+
+  const isOnWorkspacePage = location.pathname.includes("/workspace");
 
   const handleOnClick = (workspace: Workspace) => {
-    onWorkspaceSelected(workspace);
-    const location = window.location;
+    setSelectedWorkspace(workspace);
 
     if (isOnWorkspacePage) {
       navigate(`/workspaces/${workspace._id}`);
     } else {
       const basePath = location.pathname;
-
       navigate(`${basePath}?workspaceId=${workspace._id}`);
     }
   };
@@ -50,7 +45,7 @@ export const Header = ({
       <div className="flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant={"outline"}>
+            <Button variant="outline">
               {selectedWorkspace ? (
                 <>
                   {selectedWorkspace.color && (
@@ -59,7 +54,7 @@ export const Header = ({
                       name={selectedWorkspace.name}
                     />
                   )}
-                  <span className="font-medium">{selectedWorkspace?.name}</span>
+                  <span className="font-medium">{selectedWorkspace.name}</span>
                 </>
               ) : (
                 <span className="font-medium">Select Workspace</span>
@@ -73,13 +68,8 @@ export const Header = ({
 
             <DropdownMenuGroup>
               {workspaces.map((ws) => (
-                <DropdownMenuItem
-                  key={ws._id}
-                  onClick={() => handleOnClick(ws)}
-                >
-                  {ws.color && (
-                    <WorkspaceAvatar color={ws.color} name={ws.name} />
-                  )}
+                <DropdownMenuItem key={ws._id} onClick={() => handleOnClick(ws)}>
+                  {ws.color && <WorkspaceAvatar color={ws.color} name={ws.name} />}
                   <span className="ml-2">{ws.name}</span>
                 </DropdownMenuItem>
               ))}
@@ -126,3 +116,4 @@ export const Header = ({
     </div>
   );
 };
+
