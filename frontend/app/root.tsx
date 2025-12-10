@@ -9,21 +9,20 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import ReactQueryProvider from "./provider/react-query-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WorkspaceProvider } from "./context/WorkspaceContext";
+import { AuthProvider } from "./provider/auth-context";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
+  { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+const queryClient = new QueryClient();
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -45,11 +44,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <ReactQueryProvider>
-      <WorkspaceProvider>
-      <Outlet />
-      </WorkspaceProvider>
-    </ReactQueryProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <Outlet />
+        </WorkspaceProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

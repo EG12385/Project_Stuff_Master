@@ -35,9 +35,17 @@ const createWorkspace = async (req, res) => {
 
 const getWorkspaces = async (req, res) => {
   try {
+    const userId = req.user._id;
+
     const workspaces = await Workspace.find({
-      "members.user": req.user._id,
-    }).sort({ createdAt: -1 });
+      $or: [
+        { owner: userId },
+        { "members.user": userId }
+      ]
+    })
+      .populate("owner", "name email profilePicture")
+      .populate("members.user", "name email profilePicture")
+      .sort({ createdAt: -1 });
 
     res.status(200).json(workspaces);
   } catch (error) {

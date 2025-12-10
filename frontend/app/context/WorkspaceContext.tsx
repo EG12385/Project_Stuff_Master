@@ -1,53 +1,73 @@
-import { createContext, useContext, useState, useEffect, type ReactNode,  } from "react";
+import React, { createContext, useContext, useState, useEffect, type ReactNode,  } from "react";
 import type { Workspace } from "@/types";
 import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
 
 interface WorkspaceContextType {
+  workspaces: Workspace[];
   selectedWorkspace: Workspace | null;
   setSelectedWorkspace: (workspace: Workspace | null) => void;
-  workspaces: Workspace[];
-  setWorkspaces: (workspaces: Workspace[]) => void;
+  isLoadingWorkspaces: boolean;
+  reloadWorkspaces: () => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
-export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
-  const { data: workspaceData, isLoading } = useGetWorkspacesQuery() as {
-    data: Workspace[];
-    isLoading: boolean;
-  };
+interface WorkspaceProviderProps {
+  children: ReactNode;
+}
 
+export const WorkspaceProvider = ({ children }: WorkspaceProviderProps) => {
+  const { data, isLoading, refetch } = useGetWorkspacesQuery();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState<boolean>(true);
 
-  // Sync fetched workspaces to state
+  // Normalize data: always get an array of workspaces
   useEffect(() => {
-    if (!isLoading && workspaceData) {
-      setWorkspaces(workspaceData);
+    let normalizedWorkspaces: Workspace[] = [];
 
-      // Auto-select first workspace if none selected
-      if (!selectedWorkspace && workspaceData.length > 0) {
-        setSelectedWorkspace(workspaceData[0]);
+    if (data) {
+      if (Array.isArray(data)) {
+        normalizedWorkspaces = data;
+      } else if (Array.isArray((data as any).workspaces)) {
+        normalizedWorkspaces = (data as any).workspaces;
       }
     }
-  }, [workspaceData, isLoading, selectedWorkspace]);
 
-  const value: WorkspaceContextType = {
-    selectedWorkspace,
-    setSelectedWorkspace,
-    workspaces,
-    setWorkspaces,
+    setWorkspaces(normalizedWorkspaces);
+    setIsLoadingWorkspaces(isLoading);
+
+    // Set selectedWorkspace if none is selected
+    if (!selectedWorkspace && normalizedWorkspaces.length > 0) {
+      setSelectedWorkspace(normalizedWorkspaces[0]);
+    }
+  }, [data, isLoading, selectedWorkspace]);
+
+  const reloadWorkspaces = async () => {
+    setIsLoadingWorkspaces(true);
+    await refetch();
+    setIsLoadingWorkspaces(false);
   };
 
-  return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
+  return (
+    <WorkspaceContext.Provider
+      value={{
+        workspaces,
+        selectedWorkspace,
+        setSelectedWorkspace,
+        isLoadingWorkspaces,
+        reloadWorkspaces,
+      }}
+    >
+      {children}
+    </WorkspaceContext.Provider>
+  );
 };
 
-// Hook to use context safely
-export const useWorkspaceContext = () => {
+export const useWorkspaceContext = (): WorkspaceContextType => {
   const context = useContext(WorkspaceContext);
   if (!context) {
-    throw new Error("useWorkspaceContext must be used within WorkspaceProvider");
+    throw new Error("useWorkspaceContext must be used within a WorkspaceProvider");
   }
   return context;
 };
-

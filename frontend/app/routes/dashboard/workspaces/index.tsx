@@ -14,28 +14,30 @@ import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
 import type { Workspace } from "@/types";
 import { PlusCircle, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
 import { useWorkspaceContext } from "@/context/WorkspaceContext";
 
-
 const Workspaces = () => {
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
-  const { data: workspaces, isLoading } = useGetWorkspacesQuery() as {
-    data: Workspace[];
-    isLoading: boolean;
-  };
 
-   const { selectedWorkspace, setSelectedWorkspace } = useWorkspaceContext();
+  // 🔥 CORRECT RESPONSE SHAPE
+  const { data, isLoading } = useGetWorkspacesQuery();
+  const workspaces: Workspace[] = data?.workspaces ?? [];
+
+  const { selectedWorkspace, setSelectedWorkspace } = useWorkspaceContext();
   const navigate = useNavigate();
 
-  useEffect (() => {
-    if (!isLoading && workspaces?.length > 0 && !selectedWorkspace) {
-      const first =workspaces [0];
+  // 🔥 SAFE AUTO-SELECT WORKSPACE WHEN READY
+  useEffect(() => {
+    if (!isLoading && workspaces.length > 0 && !selectedWorkspace) {
+      const first = workspaces[0];
       setSelectedWorkspace(first);
       navigate(`/workspaces/${first._id}`);
     }
-  }, [isLoading, workspaces, selectedWorkspace]);
+  }, [isLoading, workspaces, selectedWorkspace, setSelectedWorkspace, navigate]);
+
+  if (isLoading) return <Loader />;
 
   return (
     <>
@@ -50,16 +52,16 @@ const Workspaces = () => {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-         {workspaces?.length ? (
-  workspaces.map((ws) => <WorkspaceCard key={ws._id} workspace={ws} />)
-) : (
-  <NoDataFound
-    title="No workspaces found"
-    description="Create a new workspace to get started"
-    buttonText="Create Workspace"
-    buttonAction={() => setIsCreatingWorkspace(true)}
-  />
-)}
+          {workspaces.length > 0 ? (
+            workspaces.map((ws) => <WorkspaceCard key={ws._id} workspace={ws} />)
+          ) : (
+            <NoDataFound
+              title="No workspaces found"
+              description="Create a new workspace to get started"
+              buttonText="Create Workspace"
+              buttonAction={() => setIsCreatingWorkspace(true)}
+            />
+          )}
         </div>
       </div>
 
@@ -83,14 +85,15 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
               <div>
                 <CardTitle>{workspace.name}</CardTitle>
                 <span className="text-xs text-muted-foreground font-bold">
-                  Created at {format(workspace.createdAt, "MMM d, yyyy h:mm a")}
+                  Created at{" "}
+                  {format(new Date(workspace.createdAt), "MMM d, yyyy h:mm a")}
                 </span>
               </div>
             </div>
 
             <div className="flex items-center text-muted-foreground">
               <Users className="size-6 mr-1" />
-              <span className="text-xs">{workspace.members.length}</span>
+              <span className="text-xs">{workspace.members?.length ?? 0}</span>
             </div>
           </div>
 

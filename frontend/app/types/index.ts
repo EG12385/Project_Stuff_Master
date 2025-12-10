@@ -1,3 +1,5 @@
+// frontend/app/types/index.ts
+
 export interface User {
   _id: string;
   email: string;
@@ -22,19 +24,12 @@ export interface Workspace {
   createdAt: Date;
   updatedAt: Date;
 }
-export enum ProjectStatus {
-  PLANNING = "Planning",
-  IN_PROGRESS = "In Progress",
-  ON_HOLD = "On Hold",
-  COMPLETED = "Completed",
-  CANCELLED = "Cancelled",
-}
 
 export interface Project {
   _id: string;
   title: string;
   description?: string;
-  status: ProjectStatus;
+  status: "Planning" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
   workspace: Workspace;
   startDate: Date;
   dueDate: Date;
@@ -48,20 +43,9 @@ export interface Project {
   updatedAt: Date;
   isArchived: boolean;
 }
+
 export type TaskStatus = "To Do" | "In Progress" | "Done";
 export type TaskPriority = "High" | "Medium" | "Low";
-export enum ProjectMemberRole {
-  MANAGER = "manager",
-  CONTRIBUTOR = "contributor",
-  VIEWER = "viewer",
-}
-
-export interface Subtask {
-  _id: string;
-  title: string;
-  completed: boolean;
-  createdAt: Date;
-}
 
 export interface Task {
   _id: string;
@@ -77,79 +61,6 @@ export interface Task {
   assignee: User | string;
   createdBy: User | string;
   assignees: User[];
-  subtasks?: Subtask[];
-  watchers?: User[];
-  attachments?: Attachment[];
-}
-
-export interface Attachment {
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  uploadedBy: string;
-  uploadedAt: Date;
-  _id: string;
-}
-
-export interface MemberProps {
-  _id: string;
-  user: User;
-  role: "admin" | "member" | "owner" | "viewer";
-  joinedAt: Date;
-}
-
-export type ResourceType =
-  | "Task"
-  | "Project"
-  | "Workspace"
-  | "Comment"
-  | "User";
-
-export type ActionType =
-  | "created_task"
-  | "updated_task"
-  | "created_subtask"
-  | "updated_subtask"
-  | "completed_task"
-  | "created_project"
-  | "updated_project"
-  | "completed_project"
-  | "created_workspace"
-  | "updated_workspace"
-  | "added_comment"
-  | "added_member"
-  | "removed_member"
-  | "joined_workspace"
-  | "added_attachment";
-
-export interface ActivityLog {
-  _id: string;
-  user: User;
-  action: ActionType;
-  resourceType: ResourceType;
-  resourceId: string;
-  details: any;
-  createdAt: Date;
-}
-
-export interface CommentReaction {
-  emoji: string;
-  user: User;
-}
-
-export interface Comment {
-  _id: string;
-  author: User;
-  text: string;
-  createdAt: Date;
-  reactions?: CommentReaction[];
-  attachments?: {
-    fileName: string;
-    fileUrl: string;
-    fileType?: string;
-    fileSize?: number;
-  }[];
 }
 
 export interface StatsCardProps {
@@ -159,6 +70,7 @@ export interface StatsCardProps {
   totalTaskCompleted: number;
   totalTaskToDo: number;
   totalTaskInProgress: number;
+  totalOverdueTasks: number;
 }
 
 export interface TaskTrendsData {
@@ -185,3 +97,4 @@ export interface WorkspaceProductivityData {
   completed: number;
   total: number;
 }
+

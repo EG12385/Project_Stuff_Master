@@ -6,6 +6,9 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
+  // silent route for Chrome DevTools probes
+  route("/.well-known/*", "routes/empty.tsx"),
+
   layout("routes/auth/auth-layout.tsx", [
     index("routes/root/home.tsx"),
     route("sign-in", "routes/auth/sign-in.tsx"),
@@ -42,4 +45,7 @@ export default [
   layout("routes/user/user-layout.tsx", [
     route("user/profile", "routes/user/profile.tsx"),
   ]),
+
+  // catch-all - unique file
+  route("*", "routes/not-found-page.tsx"),
 ] satisfies RouteConfig;
