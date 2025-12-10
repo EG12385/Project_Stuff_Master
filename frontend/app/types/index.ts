@@ -1,4 +1,4 @@
-// frontend/app/types/index.ts
+// User, Workspace, Project, Task, Attachments, Members, etc.
 
 export interface User {
   _id: string;
@@ -25,11 +25,33 @@ export interface Workspace {
   updatedAt: Date;
 }
 
+// Project and Task Enums
+export enum ProjectStatus {
+  PLANNING = "Planning",
+  IN_PROGRESS = "In Progress",
+  ON_HOLD = "On Hold",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
+
+export enum TaskStatus {
+  TO_DO = "To Do",
+  IN_PROGRESS = "In Progress",
+  DONE = "Done",
+}
+
+export enum TaskPriority {
+  HIGH = "High",
+  MEDIUM = "Medium",
+  LOW = "Low",
+}
+
+// Project, Task, Subtask, Attachments
 export interface Project {
   _id: string;
   title: string;
   description?: string;
-  status: "Planning" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
+  status: ProjectStatus;
   workspace: Workspace;
   startDate: Date;
   dueDate: Date;
@@ -44,8 +66,12 @@ export interface Project {
   isArchived: boolean;
 }
 
-export type TaskStatus = "To Do" | "In Progress" | "Done";
-export type TaskPriority = "High" | "Medium" | "Low";
+export interface Subtask {
+  _id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
 
 export interface Task {
   _id: string;
@@ -61,8 +87,22 @@ export interface Task {
   assignee: User | string;
   createdBy: User | string;
   assignees: User[];
+  subtasks?: Subtask[];
+  watchers?: User[];
+  attachments?: Attachment[];
 }
 
+export interface Attachment {
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  uploadedBy: string;
+  uploadedAt: Date;
+  _id: string;
+}
+
+// Stats, Dashboard Types
 export interface StatsCardProps {
   totalProjects: number;
   totalTasks: number;

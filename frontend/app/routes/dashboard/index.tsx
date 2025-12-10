@@ -4,7 +4,6 @@ import { useGetWorkspaceStatsQuery } from "@/hooks/use-workspace";
 import { NoDataFound } from "@/components/no-data-found";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 
-
 export const DashboardPage = () => {
   const {
     selectedWorkspace,
@@ -19,7 +18,7 @@ export const DashboardPage = () => {
     enabled: !!workspaceId,
   });
 
-  // Handle first workspace selection automatically
+  // Automatically select first workspace if none selected
   useEffect(() => {
     if (!selectedWorkspace && workspaces.length > 0) {
       setSelectedWorkspace(workspaces[0]);
@@ -46,8 +45,14 @@ export const DashboardPage = () => {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">{selectedWorkspace.name} Dashboard</h1>
-      <DashboardStats stats={data?.stats} />
-      {/* Add other dashboard components like charts, tasks, projects here */}
+      <DashboardStats
+        stats={data?.stats}
+        taskTrendsData={data?.taskTrendsData ?? []}
+        projectStatusData={data?.projectStatusData ?? []}
+        taskPriorityData={data?.taskPriorityData ?? []}
+        workspaceProductivityData={data?.workspaceProductivityData ?? []}
+      />
+      {/* You can add additional dashboard charts/components here */}
     </div>
   );
 };

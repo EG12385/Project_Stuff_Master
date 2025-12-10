@@ -1,13 +1,14 @@
-import { ProjectStatus } from "@/types";
-import {z} from "zod";
+import { z } from "zod";
+import { ProjectStatus, TaskStatus, TaskPriority } from "@/types";
 
+// Auth
 export const signInSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password is required"),
 });
 
 export const signUpSchema = z
-.object({
+  .object({
     name: z.string().min(3, "Name must be at least 3 characters"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be 8 characters"),
@@ -18,7 +19,7 @@ export const signUpSchema = z
     message: "Passwords do not match",
   });
 
-  export const resetPasswordSchema = z
+export const resetPasswordSchema = z
   .object({
     newPassword: z.string().min(8, "Password must be 8 characters"),
     confirmPassword: z.string().min(8, "Password must be 8 characters"),
@@ -28,16 +29,18 @@ export const signUpSchema = z
     message: "Passwords do not match",
   });
 
-  export const forgotPasswordSchema = z.object({
+export const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
+// Workspace
 export const workspaceSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   color: z.string().min(3, "Color must be at least 3 characters"),
   description: z.string().optional(),
 });
 
+// Project
 export const projectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().optional(),
@@ -55,15 +58,17 @@ export const projectSchema = z.object({
   tags: z.string().optional(),
 });
 
+// Task
 export const createTaskSchema = z.object({
   title: z.string().min(1, "Task title is required"),
   description: z.string().optional(),
-  status: z.enum(["To Do", "In Progress", "Done"]),
-  priority: z.enum(["Low", "Medium", "High"]),
+  status: z.nativeEnum(TaskStatus),
+  priority: z.nativeEnum(TaskPriority),
   dueDate: z.string().min(1, "Due date is required"),
   assignees: z.array(z.string()).min(1, "At least one assignee is required"),
 });
 
+// Invite Member
 export const inviteMemberSchema = z.object({
   email: z.string().email(),
   role: z.enum(["admin", "member", "viewer"]),
