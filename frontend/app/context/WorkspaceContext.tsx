@@ -1,31 +1,36 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useGetWorkspacesQuery } from "@/hooks/use-workspace";
 import type { Workspace } from "@/types";
 
 interface WorkspaceContextType {
   workspaces: Workspace[];
-  setWorkspaces: React.Dispatch<React.SetStateAction<Workspace[]>>;
   selectedWorkspace?: Workspace;
-  setSelectedWorkspace: React.Dispatch<React.SetStateAction<Workspace | undefined>>;
+  setSelectedWorkspace: (ws?: Workspace) => void;
   isLoadingWorkspaces: boolean;
-  setIsLoadingWorkspaces: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
+const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
+  undefined
+);
 
-export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) => {
+  const { data: workspaces = [], isLoading } = useGetWorkspacesQuery();
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace>();
-  const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(true);
+
+  // Auto-select first workspace when loaded
+  useEffect(() => {
+    if (!selectedWorkspace && workspaces.length > 0) {
+      setSelectedWorkspace(workspaces[0]);
+    }
+  }, [workspaces]);
 
   return (
     <WorkspaceContext.Provider
       value={{
         workspaces,
-        setWorkspaces,
         selectedWorkspace,
         setSelectedWorkspace,
-        isLoadingWorkspaces,
-        setIsLoadingWorkspaces,
+        isLoadingWorkspaces: isLoading,
       }}
     >
       {children}
@@ -36,7 +41,8 @@ export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
 export const useWorkspaceContext = () => {
   const context = useContext(WorkspaceContext);
   if (!context) {
-    throw new Error("useWorkspaceContext must be used within a WorkspaceProvider");
+    throw new Error("useWorkspaceContext must be used inside WorkspaceProvider");
   }
   return context;
 };
+

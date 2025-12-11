@@ -9,7 +9,7 @@ export const WorkspaceAvatar = ({
 }) => {
   return (
     <div
-      className="w-6 h-6 rounded flex items-center justify-center"
+      className="w-8 h-8 rounded flex items-center justify-center"
       style={{
         backgroundColor: color,
       }}

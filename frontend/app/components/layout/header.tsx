@@ -14,29 +14,30 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Link, useNavigate, useLocation } from "react-router";
 import { WorkspaceAvatar } from "../workspace/workspace-avatar";
+import type { Workspace } from "@/types";
 
 interface HeaderProps {
+  selectedWorkspace: Workspace | null;
+  onWorkspaceSelected: (workspace: Workspace) => void;
   onCreateWorkspace: () => void;
 }
 
-export const Header = ({ onCreateWorkspace }: HeaderProps) => {
+export const Header = ({
+  selectedWorkspace,
+  onWorkspaceSelected,
+  onCreateWorkspace,
+}: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const {
-    workspaces,
-    selectedWorkspace,
-    setSelectedWorkspace,
-    isLoadingWorkspaces,
-  } = useWorkspaceContext();
+  const { workspaces, isLoadingWorkspaces } = useWorkspaceContext();
 
   const handleWorkspaceSelect = (workspaceId: string) => {
     const workspace = workspaces.find((w) => w._id === workspaceId);
     if (!workspace) return;
 
-    setSelectedWorkspace(workspace);
+    onWorkspaceSelected(workspace);
 
-    // Navigate depending on current route
     if (location.pathname.includes("/workspace")) {
       navigate(`/workspaces/${workspace._id}`);
     } else {
@@ -70,7 +71,6 @@ export const Header = ({ onCreateWorkspace }: HeaderProps) => {
           <DropdownMenuContent>
             <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
             <DropdownMenuSeparator />
-
             <DropdownMenuGroup>
               {isLoadingWorkspaces ? (
                 <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
@@ -88,7 +88,6 @@ export const Header = ({ onCreateWorkspace }: HeaderProps) => {
                 <DropdownMenuItem disabled>No workspaces found</DropdownMenuItem>
               )}
             </DropdownMenuGroup>
-
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={onCreateWorkspace}>

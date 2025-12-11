@@ -16,6 +16,7 @@ export interface Workspace {
   description?: string;
   owner: User | string;
   color: string;
+  projects?: Project[]
   members: {
     user: User;
     role: "admin" | "member" | "owner" | "viewer";

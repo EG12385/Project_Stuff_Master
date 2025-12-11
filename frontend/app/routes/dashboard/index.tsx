@@ -1,45 +1,36 @@
-import React, { useEffect } from "react";
-import { useWorkspaceContext } from "@/context/WorkspaceContext";
-import { useGetWorkspaceStatsQuery } from "@/hooks/use-workspace";
-import { NoDataFound } from "@/components/no-data-found";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
-import type { Workspace } from "@/types";
-import { useLoaderData } from "react-router";
+import { useGetWorkspaceStatsQuery } from "@/hooks/use-workspace";
+/*import { useWorkspaceContext } from "@/context/WorkspaceContext";*/
+import { NoDataFound } from "@/components/no-data-found";
+import { useEffect } from "react";
+import { useWorkspaceContext } from "@/context/WorkspaceContext";
 
-export const DashboardPage = () => {
-  // Get workspaces from loader (React Router)
-  const { workspaces: loadedWorkspaces } = useLoaderData() as { workspaces: Workspace[] };
+// Required to avoid Router GET error
+export const loader = async () => {
+  return null;
+};
 
+export default function DashboardRoute() {
   const {
     selectedWorkspace,
-    setSelectedWorkspace,
-    workspaces,
-    setWorkspaces,
     isLoadingWorkspaces,
-    setIsLoadingWorkspaces,
+    workspaces,
+    setSelectedWorkspace,
   } = useWorkspaceContext();
 
-  // Load workspaces into context if not already
-  useEffect(() => {
-    if (loadedWorkspaces) {
-      setWorkspaces(loadedWorkspaces);
-      setIsLoadingWorkspaces(false);
-
-      // Automatically select first workspace if none selected
-      if (!selectedWorkspace && loadedWorkspaces.length > 0) {
-        setSelectedWorkspace(loadedWorkspaces[0]);
-      }
-    }
-  }, [loadedWorkspaces, selectedWorkspace, setWorkspaces, setIsLoadingWorkspaces, setSelectedWorkspace]);
-
   const workspaceId = selectedWorkspace?._id ?? "";
-
-  // Fetch stats for selected workspace
-  const { data, isLoading: isStatsLoading } = useGetWorkspaceStatsQuery(workspaceId, {
+  const { data, isLoading } = useGetWorkspaceStatsQuery(workspaceId, {
     enabled: !!workspaceId,
   });
 
-  if (isLoadingWorkspaces || isStatsLoading) {
+  // Auto-select first workspace
+  useEffect(() => {
+    if (!selectedWorkspace && workspaces.length > 0) {
+      setSelectedWorkspace(workspaces[0]);
+    }
+  }, [workspaces, selectedWorkspace, setSelectedWorkspace]);
+
+  if (isLoadingWorkspaces || isLoading) {
     return <div className="p-4">Loading...</div>;
   }
 
@@ -47,11 +38,9 @@ export const DashboardPage = () => {
     return (
       <NoDataFound
         title="No Workspace Selected"
-        description="Please select or create a workspace to view dashboard data."
+        description="Please create or select a workspace to view your dashboard."
         buttonText="Create Workspace"
-        buttonAction={() => {
-          console.log("Open create workspace modal");
-        }}
+        buttonAction={() => {}}
       />
     );
   }
@@ -59,16 +48,10 @@ export const DashboardPage = () => {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">{selectedWorkspace.name} Dashboard</h1>
-      <DashboardStats
-        stats={data?.stats}
-        taskTrendsData={data?.taskTrendsData || []}
-        projectStatusData={data?.projectStatusData || []}
-        taskPriorityData={data?.taskPriorityData || []}
-        workspaceProductivityData={data?.workspaceProductivityData || []}
-      />
-      {/* Additional dashboard components like charts, tasks, projects can be added here */}
+
+      {/* Safely render stats */}
+      <DashboardStats stats={data?.stats ?? {}} />
     </div>
   );
-};
-
+}
 

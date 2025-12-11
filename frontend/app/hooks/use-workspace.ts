@@ -42,13 +42,12 @@ export const useCreateWorkspace = () => {
 // -----------------------
 // GET ALL WORKSPACES
 // -----------------------
-export const useGetWorkspacesQuery = () => {
+export const useGetWorkspacesQuery = (workspaceId: string) => {
   return useQuery<Workspace[], unknown>({
     queryKey: ["workspaces"],
     queryFn: async () => {
       const res = await fetchData<any>("/workspaces");
 
-      // Normalize backend response
       if (Array.isArray(res)) return res;
       if (Array.isArray(res?.workspaces)) return res.workspaces;
       if (Array.isArray(res?.data?.workspaces)) return res.data.workspaces;
@@ -58,6 +57,29 @@ export const useGetWorkspacesQuery = () => {
     },
   });
 };
+
+// -----------------------
+// GET SINGLE WORKSPACE
+// -----------------------
+export const useGetWorkspaceQuery = (workspaceId?: string) => {
+  return useQuery<Workspace, unknown>({
+    queryKey: ["workspace", workspaceId ?? "none"],
+    enabled: !!workspaceId,
+    queryFn: async () => fetchData<Workspace>(`/workspaces/${workspaceId}`),
+  });
+};
+
+// -----------------------
+// GET WORKSPACE DETAILS
+// -----------------------
+export const useGetWorkspaceDetailsQuery = (workspaceId?: string) => {
+  return useQuery<Workspace, unknown>({
+    queryKey: ["workspace", workspaceId ?? "none", "details"],
+    enabled: !!workspaceId,
+    queryFn: async () => fetchData<Workspace>(`/workspaces/${workspaceId}`),
+  });
+};
+
 
 // -----------------------
 // GET WORKSPACE STATS
@@ -117,17 +139,6 @@ export const useGetWorkspaceStatsQuery = (
 };
 
 // -----------------------
-// GET WORKSPACE DETAILS
-// -----------------------
-export const useGetWorkspaceDetailsQuery = (workspaceId?: string) => {
-  return useQuery<Workspace, unknown>({
-    queryKey: ["workspace", workspaceId ?? "none", "details"],
-    enabled: !!workspaceId,
-    queryFn: async () => fetchData<Workspace>(`/workspaces/${workspaceId}`),
-  });
-};
-
-// -----------------------
 // INVITE MEMBER
 // -----------------------
 export const useInviteMemberMutation = () => {
@@ -155,3 +166,4 @@ export const useAcceptGenerateInviteMutation = () => {
       postData(`/workspaces/${workspaceId}/accept-generate-invite`, {}),
   });
 };
+
