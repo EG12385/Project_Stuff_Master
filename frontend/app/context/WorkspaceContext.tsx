@@ -5,6 +5,7 @@ import type { Workspace } from "@/types";
 interface WorkspaceContextType {
   workspaces: Workspace[];
   selectedWorkspace?: Workspace;
+  workspaceId?: string;
   setSelectedWorkspace: (ws?: Workspace) => void;
   isLoadingWorkspaces: boolean;
 }
@@ -14,21 +15,27 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 );
 
 export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) => {
+  // Data returned by hook is already normalized to Workspace[]
   const { data: workspaces = [], isLoading } = useGetWorkspacesQuery();
+
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace>();
 
-  // Auto-select first workspace when loaded
+  // Auto-select first workspace when workspaces load
   useEffect(() => {
-    if (!selectedWorkspace && workspaces.length > 0) {
+    if (workspaces.length > 0 && !selectedWorkspace) {
       setSelectedWorkspace(workspaces[0]);
     }
   }, [workspaces]);
+
+  // Expose workspaceId for use in hooks and components
+  const workspaceId = selectedWorkspace?._id;
 
   return (
     <WorkspaceContext.Provider
       value={{
         workspaces,
         selectedWorkspace,
+        workspaceId,
         setSelectedWorkspace,
         isLoadingWorkspaces: isLoading,
       }}
@@ -45,4 +52,5 @@ export const useWorkspaceContext = () => {
   }
   return context;
 };
+
 

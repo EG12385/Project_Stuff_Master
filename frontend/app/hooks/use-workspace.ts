@@ -42,16 +42,17 @@ export const useCreateWorkspace = () => {
 // -----------------------
 // GET ALL WORKSPACES
 // -----------------------
-export const useGetWorkspacesQuery = (workspaceId: string) => {
+export const useGetWorkspacesQuery = () => {
   return useQuery<Workspace[], unknown>({
     queryKey: ["workspaces"],
     queryFn: async () => {
       const res = await fetchData<any>("/workspaces");
 
+      // The API may return several shapes. Normalize everything into an array:
       if (Array.isArray(res)) return res;
       if (Array.isArray(res?.workspaces)) return res.workspaces;
-      if (Array.isArray(res?.data?.workspaces)) return res.data.workspaces;
       if (Array.isArray(res?.data)) return res.data;
+      if (Array.isArray(res?.data?.workspaces)) return res.data.workspaces;
 
       return [];
     },
@@ -64,8 +65,11 @@ export const useGetWorkspacesQuery = (workspaceId: string) => {
 export const useGetWorkspaceQuery = (workspaceId?: string) => {
   return useQuery<Workspace, unknown>({
     queryKey: ["workspace", workspaceId ?? "none"],
-    enabled: !!workspaceId,
-    queryFn: async () => fetchData<Workspace>(`/workspaces/${workspaceId}`),
+    enabled: !!workspaceId, // only fetch if workspaceId exists
+    queryFn: async () => {
+      if (!workspaceId) throw new Error("Workspace ID is required");
+      return fetchData<Workspace>(`/workspaces/${workspaceId}`);
+    },
   });
 };
 
