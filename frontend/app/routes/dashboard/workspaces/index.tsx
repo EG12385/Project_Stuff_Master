@@ -1,37 +1,129 @@
-import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import { useWorkspaceContext } from "@/context/WorkspaceContext";
 import { Loader } from "@/components/loader";
-import { Card } from "@/components/ui/card";
-import { WorkspaceAvatar } from "@/components/workspace/workspace-avatar";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
 
-const WorkspaceIndex = () => {
+const WorkspacesPage = () => {
+  const {
+    workspaces,
+    selectedWorkspace,
+    setSelectedWorkspace,
+    isLoadingWorkspaces,
+    workspaceId,
+  } = useWorkspaceContext();
+
   const navigate = useNavigate();
-  const { workspaces, isLoadingWorkspaces } = useWorkspaceContext();
+
+  useEffect(() => {
+    // Auto-select first workspace if none is selected
+    if (!selectedWorkspace && workspaces.length > 0) {
+      setSelectedWorkspace(workspaces[0]);
+    }
+  }, [workspaces, selectedWorkspace, setSelectedWorkspace]);
 
   if (isLoadingWorkspaces) {
-    return <Loader />;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
-  if (workspaces.length === 0) {
-    return <div className="text-muted-foreground">No workspaces found.</div>;
+  if (!workspaces.length) {
+    return (
+      <div className="text-center mt-20">
+        <h2 className="text-xl font-bold">No workspaces available</h2>
+      </div>
+    );
   }
+
+  const tasks = selectedWorkspace?.tasks ?? [];
+  const notes = selectedWorkspace?.notes ?? [];
+  const members = selectedWorkspace?.members ?? [];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {workspaces.map(ws => (
-        <Card
-          key={ws._id}
-          className="p-4 cursor-pointer hover:bg-accent"
-          onClick={() => navigate(`/dashboard/workspaces/${ws._id}`)}
-        >
-          <h2 className="font-semibold">{ws.name}</h2>
-          <p className="text-sm text-muted-foreground">{ws.description ?? "No description"}</p>
-        </Card>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Workspaces</h1>
 
-      ))}
+      {/* Workspace selector */}
+      <div className="flex gap-2 mb-6">
+        {workspaces.map((ws) => (
+          <Button
+            key={ws._id}
+            variant={ws._id === workspaceId ? "default" : "outline"}
+            onClick={() => setSelectedWorkspace(ws)}
+          >
+            {ws.name}
+          </Button>
+        ))}
+      </div>
+
+      {selectedWorkspace ? (
+        <div>
+          <h2 className="text-xl font-semibold mb-2">
+            Selected Workspace: {selectedWorkspace.name}
+          </h2>
+          <p className="mb-4">{selectedWorkspace.description}</p>
+
+          {/* Members */}
+          <div className="mb-4">
+            <h3 className="font-semibold">Members</h3>
+            {members.length ? (
+              <ul className="list-disc ml-5">
+                {members.map((member) => (
+                  <li key={member.user._id}>
+                    {member.user.name} ({member.user.email}) - {member.role}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No members yet</p>
+            )}
+          </div>
+
+          {/* Tasks */}
+          <div className="mb-4">
+            <h3 className="font-semibold">Tasks</h3>
+            {tasks.length ? (
+              <ul className="list-disc ml-5">
+                {tasks.map((task) => (
+                  <li key={task._id}>
+                    {task.title} - {task.status} - {task.priority}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No tasks yet</p>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="mb-4">
+            <h3 className="font-semibold">Notes</h3>
+            {notes.length ? (
+              <ul className="list-disc ml-5">
+                {notes.map((note) => (
+                  <li key={note._id}>
+                    {note.content} (by{" "}
+                    {typeof note.createdBy === "string"
+                      ? note.createdBy
+                      : note.createdBy.name}
+                    )
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No notes yet</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p>Please select a workspace to see details</p>
+      )}
     </div>
   );
 };
 
-export default WorkspaceIndex;
+export default WorkspacesPage;
 

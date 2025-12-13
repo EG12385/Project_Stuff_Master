@@ -16,15 +16,18 @@ export interface Workspace {
   description?: string;
   owner: User | string;
   color: string;
-  projects?: Project[]
+  projects?: Project[];
   members: {
     user: User;
     role: "admin" | "member" | "owner" | "viewer";
     joinedAt: Date;
   }[];
+  tasks?: Task[];  
+  notes?: Note[];   
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 // Project and Task Enums
 export enum ProjectStatus {
@@ -139,3 +142,10 @@ export interface WorkspaceProductivityData {
   total: number;
 }
 
+
+export interface Note {
+  _id: string;
+  content: string;
+  createdAt: Date;
+  createdBy: User | string;
+}

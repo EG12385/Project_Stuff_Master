@@ -15,26 +15,41 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 );
 
 export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) => {
-  // Data returned by hook is already normalized to Workspace[]
-  const { data: workspaces = [], isLoading } = useGetWorkspacesQuery();
+  // Fetch all workspaces
+  const { data: workspacesData = [], isLoading } = useGetWorkspacesQuery();
+
+  // Ensure workspaces is always an array
+  const workspaces: Workspace[] = Array.isArray(workspacesData)
+    ? workspacesData
+    : [];
 
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace>();
 
-  // Auto-select first workspace when workspaces load
+  // Auto-select first workspace when loaded
   useEffect(() => {
-    if (workspaces.length > 0 && !selectedWorkspace) {
+    if (!selectedWorkspace && workspaces.length > 0) {
       setSelectedWorkspace(workspaces[0]);
     }
-  }, [workspaces]);
+  }, [workspaces, selectedWorkspace]);
 
-  // Expose workspaceId for use in hooks and components
+  // Expose workspaceId for hooks/components
   const workspaceId = selectedWorkspace?._id;
+
+  // Default arrays inside selectedWorkspace to avoid runtime errors
+  const safeSelectedWorkspace: Workspace | undefined = selectedWorkspace
+    ? {
+        ...selectedWorkspace,
+        tasks: selectedWorkspace.tasks ?? [],
+        notes: selectedWorkspace.notes ?? [],
+        members: selectedWorkspace.members ?? [],
+      }
+    : undefined;
 
   return (
     <WorkspaceContext.Provider
       value={{
         workspaces,
-        selectedWorkspace,
+        selectedWorkspace: safeSelectedWorkspace,
         workspaceId,
         setSelectedWorkspace,
         isLoadingWorkspaces: isLoading,
