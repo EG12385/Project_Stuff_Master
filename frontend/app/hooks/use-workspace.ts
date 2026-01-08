@@ -24,6 +24,12 @@ const DEFAULT_STATS: StatsCardProps = {
   totalTaskInProgress: 0,
   totalOverdueTasks: 0,
 };
+interface GetWorkspacesResponse {
+  success: boolean;
+  data: {
+    workspaces: any[];
+  };
+}
 
 // -----------------------
 // CREATE WORKSPACE
@@ -31,30 +37,29 @@ const DEFAULT_STATS: StatsCardProps = {
 export const useCreateWorkspace = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Workspace, unknown, WorkspaceForm>({
-    mutationFn: (data: WorkspaceForm) => postData("/workspaces", data),
+  return useMutation({
+    mutationFn: async (data: WorkspaceForm) =>
+      postData("/workspaces", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workspaces"] });
     },
   });
 };
 
+
 // -----------------------
 // GET ALL WORKSPACES
 // -----------------------
 export const useGetWorkspacesQuery = () => {
-  return useQuery<Workspace[], unknown>({
+  return useQuery<Workspace[]>({
     queryKey: ["workspaces"],
     queryFn: async () => {
-      const res = await fetchData<any>("/workspaces");
+      const res = (await fetchData("/workspaces")) as {
+        success: boolean;
+        data: { workspaces: Workspace[] };
+      };
 
-      // The API may return several shapes. Normalize everything into an array:
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.workspaces)) return res.workspaces;
-      if (Array.isArray(res?.data)) return res.data;
-      if (Array.isArray(res?.data?.workspaces)) return res.data.workspaces;
-
-      return [];
+      return res.data.workspaces;
     },
   });
 };

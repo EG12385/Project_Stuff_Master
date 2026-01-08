@@ -4,9 +4,9 @@ export interface User {
   _id: string;
   email: string;
   name: string;
-  createdAt: Date;
+  createdAt: string;
   isEmailVerified: boolean;
-  updatedAt: Date;
+  updatedAt: string;
   profilePicture?: string;
 }
 
@@ -20,12 +20,12 @@ export interface Workspace {
   members: {
     user: User;
     role: "admin" | "member" | "owner" | "viewer";
-    joinedAt: Date;
+    joinedAt: string;
   }[];
   tasks?: Task[];  
   notes?: Note[];   
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 
@@ -57,16 +57,16 @@ export interface Project {
   description?: string;
   status: ProjectStatus;
   workspace: Workspace;
-  startDate: Date;
-  dueDate: Date;
+  startDate: string;
+  dueDate: string;
   progress: number;
   tasks: Task[];
   members: {
     user: User;
     role: "admin" | "member" | "owner" | "viewer";
   }[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isArchived: boolean;
 }
 
@@ -74,7 +74,7 @@ export interface Subtask {
   _id: string;
   title: string;
   completed: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface Task {
@@ -83,10 +83,10 @@ export interface Task {
   description?: string;
   status: TaskStatus;
   project: Project;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isArchived: boolean;
-  dueDate: Date;
+  dueDate: string;
   priority: TaskPriority;
   assignee: User | string;
   createdBy: User | string;
@@ -102,7 +102,7 @@ export interface Attachment {
   fileType: string;
   fileSize: number;
   uploadedBy: string;
-  uploadedAt: Date;
+  uploadedAt: string;
   _id: string;
 }
 
@@ -146,6 +146,6 @@ export interface WorkspaceProductivityData {
 export interface Note {
   _id: string;
   content: string;
-  createdAt: Date;
+  createdAt: string;
   createdBy: User | string;
 }
