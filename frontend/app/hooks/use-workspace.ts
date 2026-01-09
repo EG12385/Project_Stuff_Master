@@ -50,19 +50,25 @@ export const useCreateWorkspace = () => {
 // -----------------------
 // GET ALL WORKSPACES
 // -----------------------
+
+
 export const useGetWorkspacesQuery = () => {
   return useQuery<Workspace[]>({
     queryKey: ["workspaces"],
     queryFn: async () => {
-      const res = (await fetchData("/workspaces")) as {
-        success: boolean;
-        data: { workspaces: Workspace[] };
-      };
+      const res = await fetchData<any>("/workspaces");
 
-      return res.data.workspaces;
+      // Normalize ALL backend shapes
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.workspaces)) return res.workspaces;
+      if (Array.isArray(res?.data)) return res.data;
+      if (Array.isArray(res?.data?.workspaces)) return res.data.workspaces;
+
+      return [];
     },
   });
 };
+
 
 // -----------------------
 // GET SINGLE WORKSPACE
